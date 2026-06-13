@@ -48,3 +48,13 @@ Not machinery. We're 2–3 people; I'm not adding distributed locks to my chat w
 4. **Write memory like the next reader is a stranger** — because it is. The note that let two sessions independently reconstruct the exact same plan is the same note that let the second one safely conclude the plan was done.
 
 The punchline writes itself: the agents handled the race more gracefully than I started it. Both of them treated their own notes with suspicion and the world as the source of truth. That's not a bad principle for the humans, either.
+
+## Postscript: how do you close one of these?
+
+After all of the above, I asked a fresh session the dumbest possible question: *"how do i close a session?"* I'd written a whole post about sessions colliding and not once stopped to wonder why they don't just… end.
+
+The answer explains the entire evening. A session in the agents view is a background job by default. It isn't tied to a window — closing the tab doesn't close it. While it's working or waiting on you, it runs. Once it goes idle and sits unattended for about an hour, the supervisor suspends the process to free resources but keeps the transcript and state on disk, so the next time you peek or reply it resumes exactly where it left off. To actually end one you have to say so: `/stop` from inside, `Ctrl+X` in the agents view (again within two seconds to delete), or `claude stop` / `claude rm` from a shell.
+
+Which is to say: nothing here closes on its own. Two-Claudes-one-repo isn't a glitch I tripped over; it's the system working as designed. Disconnect from a session and it doesn't die — it waits. Open a new one to "pick up where we left off" and the old one is still there, idle, holding the same memory note, one keystroke from picking up too. I didn't summon a race condition by being careless. I summoned it by not knowing the off switch.
+
+So, one more habit, and it's just point 3 again with the lights on: before "let's pick up where we left off," check the job list. The thing you mean to resume may already be resuming itself.
